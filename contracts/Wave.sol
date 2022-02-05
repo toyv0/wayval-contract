@@ -18,16 +18,17 @@ contract Wave is ERC721URIStorage {
         console.log("wave contract is alive!!");
     }
 
-    function makeWave() public {
+    function makeWave(string memory waveData, address destination) public {
         uint256 newWaveId = _tokenIds.current();
 
         // hardcoded for testing
-        string memory waveUri = string(
-            abi.encodePacked("data:application/json;base64,ewogICJ0b2tlbnMiOiBbCiAgICB7CiAgICAgICJzeW1ib2wiOiAiVVNEQyIsCiAgICAgICJiYWxhbmNlIjogIjEwMC4wMDAwMDAiLAogICAgICAiYWRkcmVzcyI6ICIweDRkYmNkZjliNjJlODkxYTdjZWM1YTI1NjhjM2Y0ZmFmOWU4YWJlMmIiCiAgICB9LAogICAgewogICAgICAic3ltYm9sIjogIkRBSSIsCiAgICAgICJiYWxhbmNlIjogIjEwMC4wMDAwMDAiLAogICAgICAiYWRkcmVzcyI6ICIweDU1OTJlYzBjZmI0ZGJjMTJkM2FiMTAwYjI1NzE1MzQzNmExZjBmZWEiCiAgICB9CiAgXSwKICAibmZ0cyI6IFsKICAgIHsKICAgICAgIm5hbWUiOiAiU3F1YXJlTkZUIiwKICAgICAgImlkIjogIjIiLAogICAgICAiYWRkcmVzcyI6ICIweGViNWE4NGU3ZjFiNTllMGRjYzJmNjI4Yzc4NDk5MThiYTI5NzRjZWIiCiAgICB9LAogICAgewogICAgICAibmFtZSI6ICJTcXVhcmVORlQiLAogICAgICAiaWQiOiAiMSIsCiAgICAgICJhZGRyZXNzIjogIjB4ZWI1YTg0ZTdmMWI1OWUwZGNjMmY2MjhjNzg0OTkxOGJhMjk3NGNlYiIKICAgIH0KICBdLAogICJuYXRpdmVCYWxhbmNlIjogewogICAgImJhbGFuY2UiOiAiMC4wNjU1NiIsCiAgICAic3ltYm9sIjogIlJJTiIKICB9LAogICJhY2NvdW50IjogIm9yaWdpbi5ldGgiLAogICJkZXN0aW5hdGlvbiI6ICJkZXN0aW5hdGlvbi5ldGgiLAogICJzaWduYXR1cmUiOiAib3JpZ2luQWNjb3VudFNpZ25hdHVyZSIKfQ==")
-        );
+        // string memory waveUri = string(
+        //     abi.encodePacked("data:application/json;base64,ewogICJ0b2tlbnMiOiBbCiAgICB7CiAgICAgICJzeW1ib2wiOiAiVVNEQyIsCiAgICAgICJiYWxhbmNlIjogIjEwMC4wMDAwMDAiLAogICAgICAiYWRkcmVzcyI6ICIweDRkYmNkZjliNjJlODkxYTdjZWM1YTI1NjhjM2Y0ZmFmOWU4YWJlMmIiCiAgICB9LAogICAgewogICAgICAic3ltYm9sIjogIkRBSSIsCiAgICAgICJiYWxhbmNlIjogIjEwMC4wMDAwMDAiLAogICAgICAiYWRkcmVzcyI6ICIweDU1OTJlYzBjZmI0ZGJjMTJkM2FiMTAwYjI1NzE1MzQzNmExZjBmZWEiCiAgICB9CiAgXSwKICAibmZ0cyI6IFsKICAgIHsKICAgICAgIm5hbWUiOiAiU3F1YXJlTkZUIiwKICAgICAgImlkIjogIjIiLAogICAgICAiYWRkcmVzcyI6ICIweGViNWE4NGU3ZjFiNTllMGRjYzJmNjI4Yzc4NDk5MThiYTI5NzRjZWIiCiAgICB9LAogICAgewogICAgICAibmFtZSI6ICJTcXVhcmVORlQiLAogICAgICAiaWQiOiAiMSIsCiAgICAgICJhZGRyZXNzIjogIjB4ZWI1YTg0ZTdmMWI1OWUwZGNjMmY2MjhjNzg0OTkxOGJhMjk3NGNlYiIKICAgIH0KICBdLAogICJuYXRpdmVCYWxhbmNlIjogewogICAgImJhbGFuY2UiOiAiMC4wNjU1NiIsCiAgICAic3ltYm9sIjogIlJJTiIKICB9LAogICJhY2NvdW50IjogIm9yaWdpbi5ldGgiLAogICJkZXN0aW5hdGlvbiI6ICJkZXN0aW5hdGlvbi5ldGgiLAogICJzaWduYXR1cmUiOiAib3JpZ2luQWNjb3VudFNpZ25hdHVyZSIKfQ==")
+        // );
+        string memory waveUri = string(abi.encodePacked(waveData));
 
         // mint nft to sender with id set to newItemId
-        _safeMint(msg.sender, newWaveId); 
+        _safeMint(destination, newWaveId); 
 
         // setting nft data - what makes it valuable
         _setTokenURI(newWaveId, waveUri);
@@ -38,8 +39,8 @@ contract Wave is ERC721URIStorage {
         console.log(waveUri);
         console.log("------wave-uri-----");
 
-        console.log("WAVE with id %s minted to %s", newWaveId, msg.sender);
+        console.log("WAVE with id %s minted to %s", newWaveId, destination);
 
-        emit NewWaveMinted(msg.sender, newWaveId);
+        emit NewWaveMinted(destination, newWaveId);
     }
 }
