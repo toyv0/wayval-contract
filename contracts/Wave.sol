@@ -12,35 +12,59 @@ contract Wave is ERC721URIStorage {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
-    event NewWaveMinted(address sender, uint256 tokenId);
+    // list of all waves minted by an address
+    mapping(address => uint256[]) public mintedByAddress;
+
+    // map of waves minted by an address 
+    mapping(uint256 => address) public mintedById;
+
+    event NewWaveMinted(address _destination, uint256 _tokenId);
+
+    event WaveBurned(address _burnedBy, uint256 _tokenId);
 
     constructor() ERC721 ("Wave", "WAVE") {
         console.log("wave contract is alive!!");
     }
 
-    function makeWave(string memory waveData, address destination) public {
+    function isMinter(address _addr, uint256 _tokenId) public view returns (bool) {
+        return mintedById[_tokenId] == _addr;
+    }
+
+    function wavesMinted() public view returns (uint[] memory) {
+        return mintedByAddress[msg.sender];
+    }
+
+    function makeWave(string memory _waveData, address _destination) public {
         uint256 newWaveId = _tokenIds.current();
 
-        // hardcoded for testing
-        // string memory waveUri = string(
-        //     abi.encodePacked("data:application/json;base64,ewogICJ0b2tlbnMiOiBbCiAgICB7CiAgICAgICJzeW1ib2wiOiAiVVNEQyIsCiAgICAgICJiYWxhbmNlIjogIjEwMC4wMDAwMDAiLAogICAgICAiYWRkcmVzcyI6ICIweDRkYmNkZjliNjJlODkxYTdjZWM1YTI1NjhjM2Y0ZmFmOWU4YWJlMmIiCiAgICB9LAogICAgewogICAgICAic3ltYm9sIjogIkRBSSIsCiAgICAgICJiYWxhbmNlIjogIjEwMC4wMDAwMDAiLAogICAgICAiYWRkcmVzcyI6ICIweDU1OTJlYzBjZmI0ZGJjMTJkM2FiMTAwYjI1NzE1MzQzNmExZjBmZWEiCiAgICB9CiAgXSwKICAibmZ0cyI6IFsKICAgIHsKICAgICAgIm5hbWUiOiAiU3F1YXJlTkZUIiwKICAgICAgImlkIjogIjIiLAogICAgICAiYWRkcmVzcyI6ICIweGViNWE4NGU3ZjFiNTllMGRjYzJmNjI4Yzc4NDk5MThiYTI5NzRjZWIiCiAgICB9LAogICAgewogICAgICAibmFtZSI6ICJTcXVhcmVORlQiLAogICAgICAiaWQiOiAiMSIsCiAgICAgICJhZGRyZXNzIjogIjB4ZWI1YTg0ZTdmMWI1OWUwZGNjMmY2MjhjNzg0OTkxOGJhMjk3NGNlYiIKICAgIH0KICBdLAogICJuYXRpdmVCYWxhbmNlIjogewogICAgImJhbGFuY2UiOiAiMC4wNjU1NiIsCiAgICAic3ltYm9sIjogIlJJTiIKICB9LAogICJhY2NvdW50IjogIm9yaWdpbi5ldGgiLAogICJkZXN0aW5hdGlvbiI6ICJkZXN0aW5hdGlvbi5ldGgiLAogICJzaWduYXR1cmUiOiAib3JpZ2luQWNjb3VudFNpZ25hdHVyZSIKfQ==")
-        // );
-        string memory waveUri = string(abi.encodePacked(waveData));
+        string memory waveUri = string(abi.encodePacked(_waveData));
 
-        // mint nft to sender with id set to newItemId
-        _safeMint(destination, newWaveId); 
+        // mint to sender with id set to newItemId
+        _safeMint(_destination, newWaveId); 
 
-        // setting nft data - what makes it valuable
+        mintedByAddress[msg.sender].push(newWaveId);
+        mintedById[newWaveId] = msg.sender;
+
+        // setting data
         _setTokenURI(newWaveId, waveUri);
 
         _tokenIds.increment();
 
-        console.log("------wave-uri-----");
-        console.log(waveUri);
-        console.log("------wave-uri-----");
+        console.log("WAVE with id %s minted to %s", newWaveId, _destination);
 
-        console.log("WAVE with id %s minted to %s", newWaveId, destination);
+        emit NewWaveMinted(_destination, newWaveId);
+    }
 
-        emit NewWaveMinted(destination, newWaveId);
+    function burnWave(uint256 _tokenId) public {
+        require(isMinter(msg.sender, _tokenId), "only the minting address can burn");
+
+        address owner = ERC721.ownerOf(_tokenId);
+
+        _transfer(owner, msg.sender, _tokenId);
+
+        _burn(_tokenId);
+
+        // remove tokens minted by address
+        console.log("wave %s burned", _tokenId);
     }
 }
