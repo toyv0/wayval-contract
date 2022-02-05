@@ -15,9 +15,6 @@ module.exports = {
     }
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_KEY
-  },
-  polygonscan: {
     apiKey: process.env.POLYGONSCAN_KEY
-  }
+  },
 };
