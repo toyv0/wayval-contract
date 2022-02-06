@@ -21,18 +21,15 @@ const main = async () => {
   await txn.wait();
 
   // see list of waves made by address
-  txn = await nftContract.wavesMinted();
+  txn = await nftContract.wavesMinted(owner.address);
   console.log("array: ", txn);
 
   // check if address was minter 
   txn = await nftContract.isMinter(owner.address, 1);
   console.log("is minter: ", txn);
 
-  // burn wave function test 
-  txn = await nftContract.burnWave(1);
-  
-  txn = await nftContract.wavesMinted();
-  console.log("array: ", txn);
+  // retrieve wave function test 
+  txn = await nftContract.recoverWave(1);
 };
 
 const runMain = async () => {
