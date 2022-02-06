@@ -28,6 +28,12 @@ const main = async () => {
   txn = await nftContract.isMinter(owner.address, 1);
   console.log("is minter: ", txn);
 
+  // to test burn function
+  // txn = await nftContract.burnWave(1);
+  
+  // txn = await nftContract.wavesMinted();
+  // console.log("array: ", txn);
+
   // retrieve wave function test 
   txn = await nftContract.recoverWave(1);
 };
